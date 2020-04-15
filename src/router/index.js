@@ -153,14 +153,15 @@ export const asyncRoutes = [
       }
     ]
   },
-
   {
-    path: 'external-link',
+    path: '/account',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'index',
+        name: 'account',
+        component: () => import('@/views/account/index'),
+        meta: { title: '用户管理', icon: 'user' }
       }
     ]
   },

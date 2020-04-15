@@ -1,6 +1,6 @@
 
 const tokens = {
-  admin: {
+  15757129322: {
     token: 'phone-token'
   },
   editor: {
@@ -29,6 +29,7 @@ export default [
     url: '/vue-admin-template/user/login',
     type: 'post',
     response: config => {
+      console.log(config.body)
       const { phone } = config.body
       const token = tokens[phone]
 
@@ -36,7 +37,7 @@ export default [
       if (!token) {
         return {
           code: 60204,
-          message: 'Account and password are incorrect.'
+          message: '账号名或密码错误'
         }
       }
 

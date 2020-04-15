@@ -7,7 +7,7 @@
       </div>
       <el-form-item prop="phone">
         <span class="svg-container">
-          <i class="el-icon-mobile-phone"></i>
+          <i class="el-icon-mobile-phone" />
         </span>
         <el-input
           ref="phone"
@@ -105,7 +105,7 @@ export default {
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
-          }).catch(() => {
+          }).catch((e) => {
             this.loading = false
           })
         } else {
@@ -141,7 +141,7 @@ $cursor: #fff;
 
     input {
       background: transparent;
-      border: 0px;
+      border: 0;
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
