@@ -165,6 +165,25 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/inventory',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'inventory',
+        component: () => import('@/views/inventory/index'),
+        meta: { title: '库存管理', icon: 'table' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/inventory/edit'),
+        name: 'editOrder',
+        meta: { title: '修改订单', noCache: true, activeMenu: '/inventory/index' },
+        hidden: true
+      },
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

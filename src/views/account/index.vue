@@ -3,22 +3,22 @@
     <el-button type="primary" @click="handleAddRole">创建用户</el-button>
 
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <el-table-column align="center" label="用户名" width="220">
+      <el-table-column align="center" label="用户名" width="200">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="手机号码" width="220">
+      <el-table-column align="center" label="手机号码" width="150">
         <template slot-scope="scope">
           {{ scope.row.key }}
         </template>
       </el-table-column>
-      <el-table-column align="header-center" label="所属角色">
+      <el-table-column align="header-center" label="所属角色" width="150">
         <template slot-scope="scope">
-          {{ scope.row.description }}
+          {{ scope.row.key }}
         </template>
       </el-table-column>
-      <el-table-column align="header-center" label="密码">
+      <el-table-column align="header-center" label="拥有权限">
         <template slot-scope="scope">
           {{ scope.row.description }}
         </template>
@@ -33,8 +33,17 @@
 
     <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'编辑用户':'新建用户'">
       <el-form :model="role" label-width="80px" label-position="left">
-        <el-form-item label="Name">
-          <el-input v-model="role.name" placeholder="Role Name" />
+        <el-form-item label="用户名">
+          <el-input v-model="role.name" placeholder="用户姓名" />
+        </el-form-item>
+        <el-form-item label="手机号码">
+        <el-input v-model="role.phone" placeholder="手机号码" />
+      </el-form-item>
+        <el-form-item label="所属角色">
+          <el-input v-model="role.roles" placeholder="所属角色" />
+        </el-form-item>
+        <el-form-item label="权限">
+          <el-input v-model="role.permissions" placeholder="权限" />
         </el-form-item>
         <el-form-item label="Desc">
           <el-input
@@ -44,7 +53,7 @@
             placeholder="Role Description"
           />
         </el-form-item>
-        <el-form-item label="Menus">
+        <el-form-item label="菜单权限">
           <el-tree
             ref="tree"
             :check-strictly="checkStrictly"
@@ -72,6 +81,8 @@ import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role
 const defaultRole = {
   key: '',
   name: '',
+  phone: '',
+  permissions: '',
   description: '',
   routes: []
 }
@@ -229,7 +240,7 @@ export default {
       const { description, key, name } = this.role
       this.dialogVisible = false
       this.$notify({
-        title: 'Success',
+        title: '操作成功',
         dangerouslyUseHTMLString: true,
         message: `
             <div>Role Key: ${key}</div>

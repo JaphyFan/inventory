@@ -10,18 +10,27 @@ const roles = [
     key: 'admin',
     name: 'admin',
     description: 'Supedddddr Administrator. Have access to view all pages.',
-    routes: routes
+    routes: routes,
+    phone: 17878787873,
+    permissions: 'dddd,gggg',
+    roles: 'admin'
   },
   {
     key: 'editor',
     name: 'editor',
     description: 'Normal Editor. Can see all pages except permission page',
-    // routes: routes.filter(i => i.path !== '/permission')// just a mock
+    routes: routes.filter(i => i.path !== '/permission'), // just a mock
+    phone: 17878787873,
+    permissions: 'dddd,gggg',
+    roles: 'admin'
   },
   {
     key: 'visitor',
     name: 'visitor',
     description: 'Just a visitor. Can only see the home page and the document page',
+    phone: 17878787873,
+    permissions: 'dddd,gggg',
+    roles: 'admin',
     routes: [{
       path: '/',
       redirect: '/dashboard',
