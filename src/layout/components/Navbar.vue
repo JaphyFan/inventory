@@ -11,24 +11,50 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+          <el-dropdown-item @click="userDetail">
+            <span style="display:block;">个人信息</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+            <span style="display:block;">注销</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <el-dialog :visible.sync="dialogVisible" title="个人信息">
+      <el-form :model="role" label-width="80px" label-position="left">
+        <el-form-item label="用户名">
+          <el-input v-model="role.name" readonly />
+        </el-form-item>
+        <el-form-item label="手机号码">
+          <el-input v-model="role.phone" readonly />
+        </el-form-item>
+        <el-form-item label="所属角色">
+          <el-input v-model="role.roles" readonly />
+        </el-form-item>
+        <el-form-item label="权限">
+          <el-input v-model="role.permissions" readonly />
+        </el-form-item>
+        <el-form-item label="Desc">
+          <el-input
+            v-model="role.description"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            type="textarea"
+            placeholder="Role Description"
+          />
+        </el-form-item>
+        <el-form-item label="菜单权限">
+          <el-tree
+            ref="tree"
+            :data="routesData"
+            :props="defaultProps"
+            node-key="path"
+            class="permission-tree"
+          />
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
+
 </template>
 
 <script>
@@ -36,18 +62,43 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
+const defaultRole = {
+  key: '',
+  name: '',
+  phone: '',
+  permissions: '',
+  description: '',
+  routes: []
+}
+
 export default {
   components: {
     Breadcrumb,
     Hamburger
   },
+  data() {
+    return {
+      role: Object.assign({}, defaultRole),
+      dialogVisible: false,
+      defaultProps: {
+        children: 'children',
+        label: 'title'
+      }
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
-    ])
+    ]),
+    routesData() {
+      return this.routes
+    }
   },
   methods: {
+    userDetail() {
+      this.dialogVisible = true
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },

@@ -3,10 +3,17 @@
     <el-form ref="form" :model="manifest" label-width="80px">
       <el-row>
         <el-button
+                class="filter-item"
+                style="margin-left: 10px; float: right"
+                type="danger"
+                @click="handleReturn"
+        >
+          返回
+        </el-button>
+        <el-button
           class="filter-item"
           style="margin-left: 10px; float: right"
           type="primary"
-          icon="el-icon-edit"
           @click="handleCreate"
         >
           保存主单
@@ -165,7 +172,6 @@
 import { listOrder, createOrder, updateOrder, deleteOrder } from '@/api/order'
 import { getManifest, createManifest, updateManifest } from '@/api/manifest'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 
 export default {
   name: 'OrderEdit',
@@ -182,24 +188,6 @@ export default {
         processingContent: ''
       },
       list: null,
-      tableKey: 0,
-      importanceOptions: [1, 2, 3],
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{
@@ -209,8 +197,7 @@ export default {
           trigger: 'change'
         }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
-      downloadLoading: false
+      }
     }
   },
   created() {
@@ -227,13 +214,6 @@ export default {
           this.listLoading = false
         }, 1.5 * 1000)
       })
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
-      })
-      row.status = status
     },
     handleDelete(row, index) {
       this.$confirm('确定要删除本行么', '警告', {
@@ -276,21 +256,10 @@ export default {
         }, 1.5 * 1000)
       })
     },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
+    handleReturn() {
+      this.$router.push({ name: 'inventory' })
     },
     handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -298,8 +267,6 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -322,15 +289,6 @@ export default {
           })
         }
       })
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return v[j]
-        } else {
-          return v[j]
-        }
-      }))
     }
   }
 }

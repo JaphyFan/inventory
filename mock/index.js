@@ -2,17 +2,13 @@ import Mock from 'mockjs'
 import { param2Obj } from '../src/utils'
 
 import user from './user'
-import table from './table'
 import role from './role'
-import article from './article'
 import order from './order'
 import manifest from './manifest'
 
 const mocks = [
   ...user,
   ...role,
-  ...table,
-  ...article,
   ...order,
   ...manifest
 ]

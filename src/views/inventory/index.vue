@@ -7,14 +7,14 @@
             <el-col :span="6">
               <div class="grid-content">
                 <el-form-item label="开始时间">
-                  <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" />
+                  <el-date-picker type="date" v-model="listQuery.startDate" placeholder="选择日期" style="width: 100%;" />
                 </el-form-item>
               </div>
             </el-col>
             <el-col :span="6">
               <div class="grid-content">
                 <el-form-item label="结束时间">
-                  <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" />
+                  <el-date-picker v-model="listQuery.endDate" type="date" placeholder="选择日期" style="width: 100%;" />
                 </el-form-item>
               </div>
             </el-col>
@@ -24,7 +24,7 @@
               <div class="grid-content">
                 <el-form-item label="任务单号">
                   <el-input
-                    v-model="listQuery.title"
+                    v-model="listQuery.taskNo"
                     placeholder="请输入任务单号"
                     class="filter-item"
                     @keyup.enter.native="handleFilter"
@@ -32,49 +32,60 @@
                 </el-form-item>
               </div>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="4">
               <div class="grid-content">
                 <el-form-item label="状态">
                   <el-select
-                    v-model="listQuery.importance"
+                    v-model="listQuery.status"
                     clearable
-                    style="width: 90px"
+                    style="width: 106px"
                     class="filter-item"
                   >
                     <el-option
-                      v-for="item in importanceOptions"
+                      v-for="item in statusOptions"
                       :key="item"
-                      :label="item"
+                      :label="item | statusShowFilter"
                       :value="item"
                     />
                   </el-select>
                 </el-form-item>
               </div>
             </el-col>
-            <el-button
-              v-waves
-              class="filter-item"
-              type="primary"
-              icon="el-icon-search"
-              @click="handleFilter"
-            >
-              查询
-            </el-button>
-            <el-button
-              class="filter-item"
-              style="margin-left: 10px;"
-              type="primary"
-              icon="el-icon-edit"
-              @click="handleCreate"
-            >
-              新建订单
-            </el-button>
+            <el-col :span="2">
+              <div class="grid-content">
+                <el-form-item style="margin-left: -40px">
+                  <el-button
+                    v-waves
+                    class="filter-item"
+                    type="primary"
+                    icon="el-icon-search"
+                    @click="handleFilter"
+                  >
+                    查询
+                  </el-button>
+                </el-form-item>
+              </div>
+            </el-col>
+            <el-col :span="4" style="float: right">
+              <div class="grid-content">
+                <el-form-item>
+                  <el-button
+                    class="filter-item"
+                    style="margin-left: 10px;"
+                    type="primary"
+                    icon="el-icon-edit"
+                    @click="handleCreate"
+                  >
+                    新建订单
+                  </el-button>
+                </el-form-item>
+              </div>
+            </el-col>
+
           </el-row>
         </el-form>
       </el-header>
-
     </div>
-
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -82,7 +93,6 @@
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
     >
       <el-table-column label="任务单号" width="150px" align="center">
         <template slot-scope="{row}">
@@ -107,7 +117,7 @@
       <el-table-column label="状态" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+            {{ row.status | statusShowFilter }}
           </el-tag>
         </template>
       </el-table-column>
@@ -129,7 +139,7 @@
             </el-button>
           </router-link>
           <el-button
-            v-if="row.status!='published'"
+            v-if="row.status!=2"
             size="mini"
             type="success"
             @click="handleModifyStatus(row,'published')"
@@ -137,7 +147,6 @@
             完成
           </el-button>
           <el-button
-            v-if="row.status!='deleted'"
             size="mini"
             type="danger"
             @click="handleDelete(row,$index)"
@@ -160,7 +169,6 @@
 <script>
 import { listManifest } from '@/api/manifest'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 
 export default {
@@ -170,9 +178,17 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        0: 'primary',
+        1: 'info',
+        2: 'success'
+      }
+      return statusMap[status]
+    },
+    statusShowFilter(status) {
+      const statusMap = {
+        0: '已创建',
+        1: '进行中',
+        2: '已完成'
       }
       return statusMap[status]
     }
@@ -185,33 +201,12 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
+        status: undefined,
+        startDate: undefined,
+        endDate: undefined,
+        taskNo: ''
       },
-      importanceOptions: [1, 2, 3],
-      sortOptions: [{ label: 'ID Ascending', key: '+id' },
-        { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{
-          type: 'date',
-          required: true,
-          message: 'timestamp is required',
-          trigger: 'change'
-        }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      }
+      statusOptions: [0, 1, 2]
     }
   },
   created() {
@@ -237,50 +232,23 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'createDate') {
-        this.sortByCreateDate(order)
-      }
-    },
-    sortByCreateDate(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+createDate'
-      } else {
-        this.listQuery.sort = '-createDate'
-      }
-      this.handleFilter()
-    },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+      this.temp = Object.assign({}, row)
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+      this.$confirm('确定要删除本单么', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
-      this.list.splice(index, 1)
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
+        .then(async() => {
+          this.list.splice(index, 1)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(err => { console.error(err) })
     }
   }
 }
