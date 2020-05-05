@@ -14,6 +14,13 @@ export function getRoles() {
   })
 }
 
+export function getRole() {
+  return request({
+    url: '/vue-element-admin/roles',
+    method: 'get'
+  })
+}
+
 export function addRole(data) {
   return request({
     url: '/vue-element-admin/role',

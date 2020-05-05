@@ -5,13 +5,21 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <template>
+        <search id="header-search" class="right-menu-item" />
+        <error-log class="errLog-container right-menu-item hover-effect" />
+        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <el-tooltip content="Global Size" effect="dark" placement="bottom">
+          <size-select id="size-select" class="right-menu-item hover-effect" />
+        </el-tooltip>
+      </template>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <el-dropdown-item @click="userDetail">
+          <el-dropdown-item @click.native="userDetail">
             <span style="display:block;">个人信息</span>
           </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
@@ -61,14 +69,15 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import {getRole, getRoutes} from '@/api/role'
+import path from "path";
 const defaultRole = {
-  key: '',
-  name: '',
-  phone: '',
-  permissions: '',
-  description: '',
-  routes: []
+  key: '23',
+  name: 'dfsdf',
+  phone: 'fsfds',
+  permissions: 'fsdf',
+  description: 'agafgdgsd',
+  routes: [1,2,3]
 }
 
 export default {
@@ -79,6 +88,7 @@ export default {
   data() {
     return {
       role: Object.assign({}, defaultRole),
+      routes: [],
       dialogVisible: false,
       defaultProps: {
         children: 'children',
@@ -95,9 +105,23 @@ export default {
       return this.routes
     }
   },
+  created() {
+    // Mock: get all routes and roles list from server
+    this.getRole()
+    this.getRoutes()
+  },
   methods: {
     userDetail() {
       this.dialogVisible = true
+    },
+    async getRoutes() {
+      const res = await getRoutes()
+      this.serviceRoutes = res.data
+      this.routes = this.generateRoutes(res.data)
+    },
+    async getRole() {
+      const res = await getRole()
+      this.role = res.data[0]
     },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
@@ -105,6 +129,53 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    generateRoutes(routes, basePath = '/') {
+      const res = []
+
+      for (let route of routes) {
+        // skip some route
+        if (route.hidden) { continue }
+
+        const onlyOneShowingChild = this.onlyOneShowingChild(route.children, route)
+
+        if (route.children && onlyOneShowingChild && !route.alwaysShow) {
+          route = onlyOneShowingChild
+        }
+
+        const data = {
+          path: path.resolve(basePath, route.path),
+          title: route.meta && route.meta.title
+
+        }
+
+        // recursive child routes
+        if (route.children) {
+          data.children = this.generateRoutes(route.children, data.path)
+        }
+        res.push(data)
+      }
+      return res
+    },
+    // reference: src/view/layout/components/Sidebar/SidebarItem.vue
+    onlyOneShowingChild(children = [], parent) {
+      let onlyOneChild = null
+      const showingChildren = children.filter(item => !item.hidden)
+
+      // When there is only one child route, the child route is displayed by default
+      if (showingChildren.length === 1) {
+        onlyOneChild = showingChildren[0]
+        onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
+        return onlyOneChild
+      }
+
+      // Show parent if there are no child route to display
+      if (showingChildren.length === 0) {
+        onlyOneChild = { ... parent, path: '', noShowingChildren: true }
+        return onlyOneChild
+      }
+
+      return false
     }
   }
 }

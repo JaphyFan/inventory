@@ -37,20 +37,20 @@
           <el-input v-model="role.name" placeholder="用户姓名" />
         </el-form-item>
         <el-form-item label="手机号码">
-        <el-input v-model="role.phone" placeholder="手机号码" />
-      </el-form-item>
+          <el-input v-model="role.phone" placeholder="手机号码" />
+        </el-form-item>
         <el-form-item label="所属角色">
           <el-input v-model="role.roles" placeholder="所属角色" />
         </el-form-item>
         <el-form-item label="权限">
           <el-input v-model="role.permissions" placeholder="权限" />
         </el-form-item>
-        <el-form-item label="Desc">
+        <el-form-item label="备注">
           <el-input
             v-model="role.description"
             :autosize="{ minRows: 2, maxRows: 4}"
             type="textarea"
-            placeholder="Role Description"
+            placeholder="备注信息"
           />
         </el-form-item>
         <el-form-item label="菜单权限">
@@ -64,10 +64,21 @@
             class="permission-tree"
           />
         </el-form-item>
+        <el-form-item label="操作权限">
+          <el-tree
+            ref="tree"
+            :check-strictly="checkStrictly"
+            :data="routesData"
+            :props="defaultProps"
+            show-checkbox
+            node-key="path"
+            class="permission-tree"
+          />
+        </el-form-item>
       </el-form>
       <div style="text-align:right;">
-        <el-button type="danger" @click="dialogVisible=false">Cancel</el-button>
-        <el-button type="primary" @click="confirmRole">Confirm</el-button>
+        <el-button type="danger" @click="dialogVisible=false">取消</el-button>
+        <el-button type="primary" @click="confirmRole">确定</el-button>
       </div>
     </el-dialog>
   </div>
