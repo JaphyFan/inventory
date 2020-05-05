@@ -9,6 +9,21 @@
         <search id="header-search" class="right-menu-item" />
         <error-log class="errLog-container right-menu-item hover-effect" />
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <el-badge :value="12" class="right-menu-item hover-effect">
+          <el-dropdown trigger="click">
+          <span class="el-dropdown-link">
+            <i class="el-icon-bell"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item class="clearfix">
+              随便
+            </el-dropdown-item>
+            <el-dropdown-item class="clearfix">
+              你随便写
+            </el-dropdown-item>
+          </el-dropdown-menu>
+          </el-dropdown>
+        </el-badge>
         <el-tooltip content="Global Size" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
@@ -219,10 +234,10 @@ export default {
       display: inline-block;
       padding: 0 8px;
       height: 100%;
-      font-size: 18px;
+      line-height: 20px;
+      font-size: 20px;
       color: #5a5e66;
-      vertical-align: text-bottom;
-
+      vertical-align: middle;
       &.hover-effect {
         cursor: pointer;
         transition: background .3s;

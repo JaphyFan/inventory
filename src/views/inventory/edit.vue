@@ -158,7 +158,7 @@
                 style="width: 99.2%"
                 @click="createDataConfig()"
               >
-                <span>+ 添加新数据</span>
+                <el-button plain style="width: 100%"><span>+ 添加新数据</span></el-button>
               </div>
             </el-col>
           </el-row>
@@ -305,6 +305,6 @@ export default {
     color: #333;
     text-align: center;
     line-height: 160px;
-  }
 
+  }
 </style>
